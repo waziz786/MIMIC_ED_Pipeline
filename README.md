@@ -1,6 +1,6 @@
 # MIMIC_ED_Pipeline
 
-A comprehensive framework for extracting, processing, and analyzing emergency department patient data to predict cardiac deterioration, ICU admission, and mortality.
+A comprehensive framework for extracting, processing, and analyzing emergency department patient data to predict cardiac deterioration, ICU admission, and mortality etc...
 
 ## Quick Start
 
@@ -22,6 +22,7 @@ Use the Notebooks to run the pipeline smoothly:
 - **Modular Event Extraction**: ICU admission, pressors, ventilation, RRT, ACS, revascularization, cardiac arrest, death
 - **Flexible Outcome Definitions**: Multiple horizon windows (24h, 48h, 72h) configurable via YAML
 - **Feature Baskets**: W1 (1hr), W6 (6hr), W24 (24hr) time windows
+- **Optionla ECG**: option to integreate ECG data for W1 (1hr) and W6 (6hr)
 - **Multiple Dataset Generation**: Easy toggle between feature windows and outcome sets
 - **Comprehensive Testing**: Validation suite for data quality and pipeline integrity
 - **Database Agnostic**: PostgreSQL-based with configurable schema mapping
@@ -80,7 +81,7 @@ See [LICENSE](docs/LICENSE) for details.
 
 If you use this pipeline in your research, please cite:
 ```
-[Your citation information here]
+[TBA]
 ```
 
 ## Contact
