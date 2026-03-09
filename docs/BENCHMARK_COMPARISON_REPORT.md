@@ -1,7 +1,5 @@
 # Xie et al. Benchmark Comparison - Full Report
-
-**Date**: February 16, 2026  
-**Pipeline Version**: MIMIC-IV v2.2 ED Deterioration Pipeline  
+  
 **Benchmark**: Xie et al. (2022), *Scientific Data*, DOI: 10.1038/s41597-022-01782-9
 
 ---
@@ -226,25 +224,6 @@ Our pipeline achieves **0.6–1.1% lower missingness** across all triage vitals.
 
 ---
 
-## 8. Implications for the IEEE Manuscript
-
-### 8.1. Validation of Claims
-
-✅ **Claim 1**: "Our pipeline produces rigorous, reproducible deterioration outcomes."  
-→ **Supported** by κ̄ = 0.9768 against published benchmark.
-
-✅ **Claim 2**: "Strict temporal controls prevent leakage."  
-→ **Indirectly supported** by performance parity (no spurious gains from lookahead).
-
-✅ **Claim 3**: "Modular architecture enables multi-window, multi-outcome benchmarking."  
-→ **Demonstrated** by ability to generate Xie-compatible dataset and compare 5 outcomes.
-
-### 8.2. New Evidence for Discussion Section
-
-**Add to Discussion**:
-> *"To validate our pipeline, we compared outcomes and predictive performance against the published ED benchmark from Xie et al. (2022). Using 424,952 common ED stays, we observed near-perfect outcome concordance (mean κ = 0.98, range 0.96–1.00) and equivalent or superior model performance (ICU ≤12h: AUROC 0.81 vs 0.80, p < 0.05 via bootstrap CI). Our pipeline demonstrated 0.6–1.1% lower feature missingness, enabling training on 3,728 additional complete records. These results confirm that our infrastructure produces scientifically valid outcomes while offering technical advantages in reproducibility and data quality."*
-
-### 8.3. New Table for Results Section
 
 **TABLE VIII: Benchmark Comparison Against Xie et al. (2022)**
 
@@ -260,10 +239,6 @@ Our pipeline achieves **0.6–1.1% lower missingness** across all triage vitals.
 
 ---
 
-## 9. Conclusion
-
-This comprehensive benchmark comparison demonstrates that our ED deterioration pipeline produces outcomes and predictive performance **scientifically equivalent to the published Xie et al. (2022) benchmark**. With mean outcome concordance κ = 0.98, AUROC values within confidence intervals, and superior feature completeness, our pipeline is **validated for research use**.
-
 ### Key Achievements
 
 1. ✅ **99.97% cohort overlap** with established benchmark
@@ -271,11 +246,6 @@ This comprehensive benchmark comparison demonstrates that our ED deterioration p
 3. ✅ **Performance parity or superiority** (ICU +1.3%, mortality +1.2% AUROC gains)
 4. ✅ **Better data quality** (0.6–1.1% lower missingness)
 5. ✅ **Deterministic, reproducible builds**
-
-### Recommendation
-
-**Proceed with confidence**: Our pipeline is ready for scientific publication and benchmarking studies. The infrastructure meets rigorous validation standards and offers technical advantages over existing approaches.
-
 ---
 
 ## References
