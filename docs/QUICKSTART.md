@@ -1,4 +1,5 @@
 # Quick Start Guide
+Prior to using this, make sure the data is MIMIC-IV is loaded into MySQL accordingly (see quickstart loading file)
 
 ## Setup Instructions
 
