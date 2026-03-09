@@ -1,8 +1,7 @@
 # Experimental Validation Report
-## MIMIC-IV ED Deterioration Prediction Pipeline
+
 
 **Date:** February 14, 2026  
-**Pipeline Version:** 2.0  
 **Total Runtime:** ~20 minutes
 
 ---
@@ -138,104 +137,7 @@ All experiments use GroupKFold cross-validation (5-fold by subject_id), bootstra
 
 ---
 
-## Part 3: Option B — Leakage Demonstration
 
-### Experimental Design
-
-**Objective:** Prove pipeline is leakage-free by demonstrating what leakage actually looks like when deliberately introduced.
-
-**Four Conditions:**
-
-1. **Leakage-Free (W6):** Proper temporal alignment (W6 features → 24h outcome)
-2. **Naive-1 (Temporal Leak):** W24 features → 24h outcome (features measured after outcome window starts)
-3. **Naive-2 (Process Leak):** W6 + 3 synthetic "process" features that encode ICU proximity
-   - `leaky_time_to_icu`: Hours until ICU admission (0 if no ICU)
-   - `leaky_icu_bed_requested`: Binary indicator of ICU bed request
-   - `leaky_vasopressor_ordered`: Binary indicator of vasopressor order
-4. **Negative Control:** W6 features with randomly shuffled labels (should yield ~0.50 AUROC)
-
-**Validation:** Same methodology as Option A (5-fold GroupKFold, bootstrap CI).
-
-### Results: Leakage Detection
-
-| Condition | LR AUROC [95% CI] | XGB AUROC [95% CI] | **Δ vs. Leakage-Free** |
-|---|---|---|---|
-| **Leakage-Free (W6)** | 0.878 [0.860–0.894] | 0.899 [0.882–0.915] | — |
-| **Naive-1 (W24→24h)** | 0.905 [0.889–0.921] | 0.936 [0.919–0.949] | +2.7% (LR), +3.6% (XGB) |
-| **Naive-2 (Process)** | **0.994** [0.990–0.997] | **0.995** [0.991–0.997] | **+11.6% (LR), +9.6% (XGB)** 🚨 |
-| **Negative Control** | 0.503 [0.478–0.531] | 0.498 [0.469–0.525] | — |
-
-### Interpretation by Condition
-
-#### ✅ Leakage-Free Baseline (AUROC 0.88–0.90)
-- Represents genuine predictive performance
-- Matches Option A results (W6, admitted)
-- Confidence intervals are tight (±0.004–0.005)
-
-#### ⚠️ Naive-1: Subtle Temporal Leakage (+5–6%)
-- **Mechanism:** W24 features include labs/vitals drawn 6–24h into the outcome window
-- **Signal:** Substantial and statistically significant inflation (+5.1 to +6.4 points)
-- **Risk:** Could be **mistaken for "better feature engineering"** in absence of proper temporal validation
-- **Detection:** Requires side-by-side comparison with properly aligned features
-
-#### 🚨 Naive-2: Dramatic Process Leakage (+10–12%)
-- **Mechanism:** "Process features" directly encode outcome proximity (ICU bed request, time-to-ICU)
-- **Signal:** Near-perfect discrimination (AUROC 0.994–0.995, AUPRC 0.973–0.976)
-- **Risk:** **Unmistakable leakage footprint** — no legitimate clinical features yield this performance
-- **Brier score collapse:** 0.025 (LR), 0.015 (XGB) vs. 0.138/0.067 leakage-free
-- **Detection:** Obvious from performance metrics alone
-
-#### ✅ Negative Control: Model Integrity Validation (AUROC ~0.50)
-- **Mechanism:** Labels randomly shuffled (breaks true predictive relationship)
-- **Signal:** Performance collapses to chance (0.498–0.503)
-- **Interpretation:** 
-  - Models learn **nothing** from random labels ✓
-  - No hidden leakage pathways (e.g., through subject_id, time) ✓
-  - GroupKFold properly isolates subjects ✓
-- **Critical validation:** Confirms the 0.878–0.899 leakage-free performance is entirely due to genuine clinical signal, not artifact
-
-### Key Insights
-
-1. **Leakage manifests on a spectrum:**
-   - Subtle (temporal: +3–4%) → easily overlooked
-   - Dramatic (process: +10–12%) → unmistakable
-
-2. **Our pipeline is leakage-free:**
-   - Negative control confirms no hidden pathways
-   - Performance is realistic (0.88–0.90, not 0.95+)
-   - Temporal logic is sound (W6 → 24h outcome)
-
-3. **Negative controls are essential:**
-   - Proving models learn "nothing from noise" validates they learn "something real from signal"
-   - Without this test, we cannot distinguish genuine performance from methodological artifact
-
----
-
-## Part 4: Publication-Ready Figures
-
-All figures generated in IEEE two-column format (300 DPI, serif fonts, 9pt) with bootstrap 95% confidence intervals.
-
-### Figure A1: Information Gain by Temporal Window
-**File:** `artifacts/results/figures/fig_a1_information_gain.pdf`
-
-Grouped bar chart showing AUROC progression across W1/W6/W24 for both cohorts (all-ED, admitted). Demonstrates clear monotonic information accumulation.
-
-### Figure A2: ECG Incremental Value
-**File:** `artifacts/results/figures/fig_a2_ecg_delta.pdf`
-
-Paired bar chart comparing clinical-only vs. clinical+ECG for cardiac outcomes (cardiac arrest, ACS). Shows consistent +1.5 to +4.0 point AUROC gains.
-
-### Figure A3: Multi-Outcome Robustness
-**File:** `artifacts/results/figures/fig_a3_multi_outcome.pdf`
-
-Grouped bar chart showing AUROC across 5 outcomes (deterioration, ICU, death, vent, pressors) for LR and XGBoost. Demonstrates consistent high performance.
-
-### Figure B1: Leakage Demonstration
-**File:** `artifacts/results/figures/fig_b1_leakage.pdf`
-
-Comparison of 4 conditions (leakage-free, Naive-1, Naive-2, negative control) showing dramatic performance differences. Includes error bars for statistical rigor.
-
----
 
 ## Statistical Methods Summary
 
@@ -300,16 +202,15 @@ python experiments/part4_generate_figures.py
 
 This comprehensive validation demonstrates:
 
-1. ✅ **Genuine predictive value** — AUROC 0.88–0.97 with clear information gain over time
-2. ✅ **Multi-outcome robustness** — Consistent performance across 5 critical endpoints
-3. ✅ **ECG clinical utility** — Measurable benefit (+1.5 to +4.0 points) for cardiac outcomes
-4. ✅ **Complete absence of leakage** — Negative control at chance (0.50), dramatic inflation when leakage deliberately introduced (0.99)
-5. ✅ **Statistical rigor** — GroupKFold, bootstrap CI, proper hyperparameter tuning
-6. ✅ **Publication-ready** — IEEE-format figures, comprehensive tables, reproducible code
+1. **Genuine predictive value** — AUROC 0.88–0.97 with clear information gain over time
+2. **Multi-outcome robustness** — Consistent performance across 5 critical endpoints
+3. **ECG clinical utility** — Measurable benefit (+1.5 to +4.0 points) for cardiac outcomes
+5. **Statistical rigor** — GroupKFold, bootstrap CI, proper hyperparameter tuning
+
 
 The pipeline is suitable for deployment and further investigation in prospective validation studies.
 
 ---
 
-**Generated:** February 14, 2026  
-**Contact:** See PROJECT_COMPLETE.md for full documentation
+
+*****END******
